@@ -29,37 +29,40 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.jumpypants.murphy.RobotContext;
+import com.jumpypants.murphy.states.StateMachine;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.robotStates.IntakingState;
 
-@TeleOp(name="Servo Test", group="Linear OpMode")
-
-public class BasicOmniOpMode_Linear extends LinearOpMode {
+@TeleOp(name="Murphy Example Tele-Op", group="Linear OpMode")
+public class MainTeleOp extends OpMode {
+    private StateMachine stateMachine;
 
     @Override
-    public void runOpMode() {
-        waitForStart();
+    public void init() {
+        MyRobot robotContext = new MyRobot(
+                telemetry,
+                gamepad1,
+                gamepad2,
+                new com.arcrobotics.ftclib.drivebase.MecanumDrive(
+                        hardwareMap.get(Motor.class, "frontLeft"),
+                        hardwareMap.get(Motor.class, "backLeft"),
+                        hardwareMap.get(Motor.class, "frontRight"),
+                        hardwareMap.get(Motor.class, "backRight")
+                ),
+                new org.firstinspires.ftc.teamcode.subSystems.Arm(hardwareMap),
+                new org.firstinspires.ftc.teamcode.subSystems.Claw(hardwareMap)
+        );
 
-        Servo servo = hardwareMap.get(Servo.class, "testServo");
-        TouchSensor touchSensor = hardwareMap.get(TouchSensor.class, "touch");
+        stateMachine = new StateMachine(new IntakingState(robotContext), robotContext);
+    }
 
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-            telemetry.addData("Target Servo Pos", servo.getPosition());
-            telemetry.update();
-
-            if (touchSensor.isPressed()) {
-                servo.setPosition(0.0); // Set servo to position 0
-            } else {
-                servo.setPosition(1.0); // Set servo to position 1
-            }
-        }
+    @Override
+    public void loop() {
+        stateMachine.step();
     }
 }
