@@ -27,42 +27,54 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.subSystems;
 
+import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.jumpypants.murphy.states.StateMachine;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.jumpypants.murphy.RobotContext;
+import com.jumpypants.murphy.tasks.Task;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.robotStates.IntakingState;
-import org.firstinspires.ftc.teamcode.subSystems.Z_arm;
+public class Z_arm {
+    private Motor slideMotor;
+    public static double max_pos;
+    public static double min_pos;
+    PIDFController pidController;
 
-@TeleOp(name="Murphy Example Tele-Op", group="Linear OpMode")
-public class MainTeleOp extends OpMode {
-    private StateMachine stateMachine;
+    public Z_arm(HardwareMap hardwareMap) {
+        slideMotor = new Motor(hardwareMap, "extensionMotor");
 
-    @Override
-    public void init() {
-        MyRobot robotContext = new MyRobot(
-                telemetry,
-                gamepad1,
-                gamepad2,
-                new com.arcrobotics.ftclib.drivebase.MecanumDrive(
-                        hardwareMap.get(Motor.class, "frontLeft"),
-                        hardwareMap.get(Motor.class, "backLeft"),
-                        hardwareMap.get(Motor.class, "frontRight"),
-                        hardwareMap.get(Motor.class, "backRight")
-                ),
-                new org.firstinspires.ftc.teamcode.subSystems.Z_arm(hardwareMap),
-                new org.firstinspires.ftc.teamcode.subSystems.X_arm(hardwareMap),
-                new org.firstinspires.ftc.teamcode.subSystems.Claw(hardwareMap)
-        );
+        slideMotor.setRunMode(Motor.RunMode.RawPower);
 
-        stateMachine = new StateMachine(new IntakingState(robotContext), robotContext);
+        slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+
+        slideMotor.resetEncoder();
+    }
+    public void setPos(double pos){
+        slideMotor.set(Math.max(min_pos, Math.min(max_pos, pos)));
+    }
+    public void tickPID(){
+        pidController = new PIDController(0.2,0.1, 0.1);
+        slideMotor.set(pidController.calculate(slideMotor.encoder.getPosition()));
     }
 
-    @Override
-    public void loop() {
-        stateMachine.step();
+    public class MoveShoulderTask extends Task {
+        private final double targetPosition;
+
+        public MoveShoulderTask(RobotContext robotContext, double targetPosition) {
+            super(robotContext);
+            this.targetPosition = targetPosition;
+        }
+
+        protected void initialize(RobotContext robotContext) {
+            pidController.setSetPoint(targetPosition);
+        }
+
+        @Override
+        protected boolean run(RobotContext robotContext) {
+            return Math.abs(slideMotor.getCurrentPosition() - targetPosition) > 5; // Tolerance of 5 ticks
+        }
+
     }
 }

@@ -27,42 +27,64 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.subSystems;
 
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.jumpypants.murphy.states.StateMachine;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.jumpypants.murphy.RobotContext;
+import com.jumpypants.murphy.tasks.Task;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.robotStates.IntakingState;
-import org.firstinspires.ftc.teamcode.subSystems.Z_arm;
 
-@TeleOp(name="Murphy Example Tele-Op", group="Linear OpMode")
-public class MainTeleOp extends OpMode {
-    private StateMachine stateMachine;
+public class X_arm {
+    public static final double MAX_POS = 4.0;
+    public static final double MIN_POS = 0.0;
+    public static final double MAX_PWR = 1.0;
+    public static final double MIN_PWR = -1.0;
 
-    @Override
-    public void init() {
-        MyRobot robotContext = new MyRobot(
-                telemetry,
-                gamepad1,
-                gamepad2,
-                new com.arcrobotics.ftclib.drivebase.MecanumDrive(
-                        hardwareMap.get(Motor.class, "frontLeft"),
-                        hardwareMap.get(Motor.class, "backLeft"),
-                        hardwareMap.get(Motor.class, "frontRight"),
-                        hardwareMap.get(Motor.class, "backRight")
-                ),
-                new org.firstinspires.ftc.teamcode.subSystems.Z_arm(hardwareMap),
-                new org.firstinspires.ftc.teamcode.subSystems.X_arm(hardwareMap),
-                new org.firstinspires.ftc.teamcode.subSystems.Claw(hardwareMap)
-        );
+    private Motor slideMotor;
 
-        stateMachine = new StateMachine(new IntakingState(robotContext), robotContext);
+    public X_arm(HardwareMap hardwareMap) {
+        slideMotor = new Motor(hardwareMap, "extensionMotor");
+
+        slideMotor.setRunMode(Motor.RunMode.RawPower);
+
+        slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+
+        slideMotor.resetEncoder();
+    }
+    public X_arm(Motor motor) {
+        slideMotor = motor;
+        slideMotor.setRunMode(Motor.RunMode.RawPower);
+        slideMotor.resetEncoder();
     }
 
-    @Override
-    public void loop() {
-        stateMachine.step();
+    public double limit(double value, double min, double max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    public class MoveExtensionTask extends Task {
+
+        public MoveExtensionTask(RobotContext robotContext) {
+            super(robotContext);
+
+        }
+
+        public void setPower(double pwr) {
+            double currentPos = slideMotor.getCurrentPosition();
+            if (pwr > 0 && currentPos < MAX_POS || pwr < 0 && currentPos > MIN_POS) {
+                slideMotor.set(limit(pwr, MIN_PWR, MAX_PWR));
+            }
+            return;
+        }
+
+        @Override
+        protected void initialize(RobotContext robotContext) {
+
+        }
+
+        @Override
+        protected boolean run(RobotContext robotContext) {
+            return false;
+        }
     }
 }
