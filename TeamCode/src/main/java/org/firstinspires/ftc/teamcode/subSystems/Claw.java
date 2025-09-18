@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.MyRobot;
+
 public class Claw{
 
     public static final double WRIST_MAX_POS = 0.8;
@@ -62,7 +64,29 @@ public class Claw{
 
     }
 
-    public class MoveClawTask extends Task {
+    public class ManualWristTask extends Task {
+        private final RobotContext robotContext;
+
+        public ManualWristTask(MyRobot robotContext) {
+            super(robotContext);
+            this.robotContext = robotContext;
+        }
+
+        @Override
+        protected void initialize(RobotContext robotContext) {}
+
+        @Override
+        protected boolean run(RobotContext robotContext) {
+            if (robotContext.gamepad2.dpad_up) {
+                wristServo.setPosition(WRIST_MAX_POS);
+            } else if (robotContext.gamepad2.dpad_down) {
+                wristServo.setPosition(WRIST_MIN_POS);
+            }
+            return true;
+        }
+    }
+
+        public class MoveClawTask extends Task {
         private final double estimatedTimeTaken;
         private final double targetPosition;
 

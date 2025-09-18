@@ -69,14 +69,6 @@ public class X_arm {
 
         }
 
-        public void setPower(double pwr) {
-            double currentPos = slideMotor.getCurrentPosition();
-            if (pwr > 0 && currentPos < MAX_POS || pwr < 0 && currentPos > MIN_POS) {
-                slideMotor.set(limit(pwr, MIN_PWR, MAX_PWR));
-            }
-            return;
-        }
-
         @Override
         protected void initialize(RobotContext robotContext) {
 

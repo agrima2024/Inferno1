@@ -59,10 +59,10 @@ public class Z_arm {
         slideMotor.set(pidController.calculate(slideMotor.encoder.getPosition()));
     }
 
-    public class MoveShoulderTask extends Task {
+    public class MoveZ_armTask extends Task {
         private final double targetPosition;
 
-        public MoveShoulderTask(RobotContext robotContext, double targetPosition) {
+        public MoveZ_armTask(RobotContext robotContext, double targetPosition) {
             super(robotContext);
             this.targetPosition = targetPosition;
         }

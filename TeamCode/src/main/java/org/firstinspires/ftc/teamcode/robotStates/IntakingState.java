@@ -43,13 +43,14 @@ public class IntakingState implements State {
 
     @Override
     public String getName() {
+
         return "Intaking";
     }
 
     private static class GrabTask extends ParallelTask {
         public GrabTask(MyRobot robotContext) {
             super(robotContext, true,
-                    //robotContext.claw.new ManualWristTask(robotContext),
+                    robotContext.claw.new ManualWristTask(robotContext),
                     new WaitForTransferInputTask(robotContext)
             );
         }
@@ -75,7 +76,7 @@ public class IntakingState implements State {
                     robotContext.claw.new MoveClawTask(robotContext, Claw.CLAW_CLOSED_POS),
                     new ParallelTask(robotContext, false,
                             robotContext.X_arm.new MoveExtensionTask(robotContext),
-                            robotContext.Z_arm.new MoveShoulderTask(robotContext, Z_arm.max_pos),
+                            robotContext.Z_arm.new MoveZ_armTask(robotContext, Z_arm.max_pos),
                             robotContext.claw.new MoveWristTask(robotContext, Claw.WRIST_MAX_POS)
                     )
             );
