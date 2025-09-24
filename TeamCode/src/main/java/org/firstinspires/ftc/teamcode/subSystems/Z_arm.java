@@ -59,14 +59,15 @@ public class Z_arm {
         slideMotor.set(pidController.calculate(slideMotor.encoder.getPosition()));
     }
 
-    public class MoveZ_armTask extends Task {
+    public class MoveShoulderTask extends Task {
         private final double targetPosition;
 
-        public MoveZ_armTask(RobotContext robotContext, double targetPosition) {
+        public MoveShoulderTask(RobotContext robotContext, double targetPosition) {
             super(robotContext);
             this.targetPosition = targetPosition;
         }
 
+        @Override
         protected void initialize(RobotContext robotContext) {
             pidController.setSetPoint(targetPosition);
         }
@@ -75,6 +76,5 @@ public class Z_arm {
         protected boolean run(RobotContext robotContext) {
             return Math.abs(slideMotor.getCurrentPosition() - targetPosition) > 5; // Tolerance of 5 ticks
         }
-
     }
 }
