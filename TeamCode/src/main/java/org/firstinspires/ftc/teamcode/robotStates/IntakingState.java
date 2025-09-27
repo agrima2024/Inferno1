@@ -75,7 +75,7 @@ public class IntakingState implements State {
             super(robotContext,
                     robotContext.claw.new MoveClawTask(robotContext, Claw.CLAW_CLOSED_POS),
                     new ParallelTask(robotContext, false,
-                            robotContext.X_arm.new MoveX_armTask(robotContext),
+                            robotContext.X_arm.new MoveX_armTask(robotContext, X_arm.MIN_POS),
                             robotContext.Z_arm.new MoveZ_armTask(robotContext, Z_arm.max_pos),
                             robotContext.claw.new MoveWristTask(robotContext, Claw.WRIST_MAX_POS)
                     )

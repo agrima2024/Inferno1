@@ -19,7 +19,7 @@ public class Claw{
     private  Servo wristServo;
     private  Servo clawServo;
 
-    public Claw (HardwareMap hardwareMap){
+    public Claw (Servo wristServo, Servo clawServo){
         this.wristServo = wristServo;
         this.clawServo = clawServo;
     }
@@ -65,11 +65,8 @@ public class Claw{
     }
 
     public class ManualWristTask extends Task {
-        private final RobotContext robotContext;
-
         public ManualWristTask(MyRobot robotContext) {
             super(robotContext);
-            this.robotContext = robotContext;
         }
 
         @Override
@@ -86,7 +83,7 @@ public class Claw{
         }
     }
 
-        public class MoveClawTask extends Task {
+    public class MoveClawTask extends Task {
         private final double estimatedTimeTaken;
         private final double targetPosition;
 

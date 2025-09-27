@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode.subSystems;
 
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.jumpypants.murphy.RobotContext;
 import com.jumpypants.murphy.tasks.Task;
@@ -40,7 +39,10 @@ public class Z_arm {
     private Motor slideMotor;
     public static double max_pos;
     public static double min_pos;
-    PIDFController pidController;
+    public static final double PID_P = 0.001;
+    public static final double PID_I = 0.0001;
+    public static final double PID_D = 0.004;
+    private final PIDController SLIDEMOTOR_PID = new PIDController(PID_P, PID_I, PID_D);
 
     public Z_arm(HardwareMap hardwareMap) {
         slideMotor = new Motor(hardwareMap, "extensionMotor");
@@ -55,8 +57,7 @@ public class Z_arm {
         slideMotor.set(Math.max(min_pos, Math.min(max_pos, pos)));
     }
     public void tickPID(){
-        pidController = new PIDController(0.2,0.1, 0.1);
-        slideMotor.set(pidController.calculate(slideMotor.encoder.getPosition()));
+        slideMotor.set(SLIDEMOTOR_PID.calculate(slideMotor.encoder.getPosition()));
     }
 
     public class MoveZ_armTask extends Task {
@@ -66,10 +67,13 @@ public class Z_arm {
             super(robotContext);
             this.targetPosition = targetPosition;
         }
+        private void setTargetPosition(double targetPosition) {
+            SLIDEMOTOR_PID.setSetPoint(targetPosition);
+        }
 
         @Override
         protected void initialize(RobotContext robotContext) {
-            pidController.setSetPoint(targetPosition);
+            setTargetPosition(targetPosition);
         }
 
         @Override

@@ -8,6 +8,7 @@ import com.jumpypants.murphy.tasks.Task;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MyRobot;
+import org.firstinspires.ftc.teamcode.subSystems.X_arm;
 import org.firstinspires.ftc.teamcode.subSystems.Z_arm;
 import org.firstinspires.ftc.teamcode.subSystems.Claw;
 
@@ -23,7 +24,7 @@ public class OuttakingState implements State {
                 robotContext.claw.new MoveClawTask(robotContext, Claw.CLAW_CLOSED_POS),
                 new ParallelTask(robotContext, false,
                         robotContext.claw.new MoveWristTask(robotContext, Claw.WRIST_MAX_POS),
-                        robotContext.X_arm.new MoveX_arm(robotContext),
+                        robotContext.X_arm.new MoveX_armTask(robotContext, X_arm.MIN_POS),
                         robotContext.Z_arm.new MoveZ_armTask(robotContext, Z_arm.max_pos)
                 )
         );

@@ -29,7 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.subSystems;
 
-import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.jumpypants.murphy.RobotContext;
 import com.jumpypants.murphy.tasks.Task;
@@ -44,7 +44,10 @@ public class X_arm {
 
     private Motor slideMotor;
 
-    PIDFController pidController;
+    public static final double PID_P = 0.001;
+    public static final double PID_I = 0.0001;
+    public static final double PID_D = 0.004;
+    private final PIDController SLIDEMOTOR_PID = new PIDController(PID_P, PID_I, PID_D);
 
     public X_arm(HardwareMap hardwareMap) {
         slideMotor = new Motor(hardwareMap, "extensionMotor");
@@ -72,8 +75,13 @@ public class X_arm {
             this.targetPosition = targetPosition;
         }
 
+        private void setTargetPosition(double targetPosition) {
+            SLIDEMOTOR_PID.setSetPoint(targetPosition);
+        }
+
+        @Override
         protected void initialize(RobotContext robotContext) {
-            pidController.setSetPoint(targetPosition);
+            setTargetPosition(targetPosition);
         }
 
         @Override
