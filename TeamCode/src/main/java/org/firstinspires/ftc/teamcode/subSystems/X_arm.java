@@ -62,21 +62,20 @@ public class X_arm {
         return Math.min(Math.max(value, min), max);
     }
 
-    public class MoveExtensionTask extends Task {
+    public class MoveX_armTask extends Task {
 
-        public MoveExtensionTask(RobotContext robotContext) {
+        public MoveX_armTask(RobotContext robotContext) {
             super(robotContext);
-
+            this.targetPosition = targetPosition;
         }
 
-        @Override
         protected void initialize(RobotContext robotContext) {
-
+            pidController.setSetPoint(targetPosition);
         }
 
         @Override
         protected boolean run(RobotContext robotContext) {
-            return false;
+            return Math.abs(slideMotor.getCurrentPosition() - targetPosition) > 5; // Tolerance of 5 ticks
         }
     }
 }

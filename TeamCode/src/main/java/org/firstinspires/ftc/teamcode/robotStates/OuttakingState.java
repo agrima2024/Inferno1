@@ -23,7 +23,7 @@ public class OuttakingState implements State {
                 robotContext.claw.new MoveClawTask(robotContext, Claw.CLAW_CLOSED_POS),
                 new ParallelTask(robotContext, false,
                         robotContext.claw.new MoveWristTask(robotContext, Claw.WRIST_MAX_POS),
-                        robotContext.X_arm.new MoveExtensionTask(robotContext),
+                        robotContext.X_arm.new MoveX_arm(robotContext),
                         robotContext.Z_arm.new MoveZ_armTask(robotContext, Z_arm.max_pos)
                 )
         );
