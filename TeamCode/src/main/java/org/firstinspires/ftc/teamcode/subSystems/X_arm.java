@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.subSystems;
 
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.jumpypants.murphy.RobotContext;
 import com.jumpypants.murphy.tasks.Task;
@@ -42,6 +43,8 @@ public class X_arm {
     public static final double MIN_PWR = -1.0;
 
     private Motor slideMotor;
+
+    PIDFController pidController;
 
     public X_arm(HardwareMap hardwareMap) {
         slideMotor = new Motor(hardwareMap, "extensionMotor");
@@ -63,8 +66,8 @@ public class X_arm {
     }
 
     public class MoveX_armTask extends Task {
-
-        public MoveX_armTask(RobotContext robotContext) {
+        private final double targetPosition;
+        public MoveX_armTask(RobotContext robotContext, double targetPosition) {
             super(robotContext);
             this.targetPosition = targetPosition;
         }
